@@ -121,15 +121,15 @@ def main(_):
       tf.saved_model.signature_def_utils.build_signature_def(
           inputs={'images': tensor_info_x},
           outputs={'scores': tensor_info_y},
-          method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME))
+          method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME))# i'm afraid this is model type?
 
   legacy_init_op = tf.group(tf.tables_initializer(), name='legacy_init_op')
-  builder.add_meta_graph_and_variables(
+  builder.add_meta_graph_and_variables(# where are the meta graph and variables? Why save these 3 things? 
       sess, [tf.saved_model.tag_constants.SERVING],
       signature_def_map={
-          'predict_images':
-              prediction_signature, # this is used in client.
-          tf.saved_model.signature_constants.DEFAULT_SERVING_SIGNATURE_DEF_KEY:
+          'predict_images': # this is signature key
+              prediction_signature, # this is signature. this is used in client.
+          tf.saved_model.signature_constants.DEFAULT_SERVING_SIGNATURE_DEF_KEY: # the key is actually 'serving_default' 
               classification_signature,# what is this used for? not used in client.
       },
       legacy_init_op=legacy_init_op)
