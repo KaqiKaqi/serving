@@ -136,18 +136,24 @@ def do_inference(hostport, work_dir, concurrency, num_tests):
   Raises:
     IOError: An error occurred processing test data set.
   """
+
+# load data
   test_data_set = mnist_input_data.read_data_sets(work_dir).test
+# ==================================================================    
   host, port = hostport.split(':')
   channel = implementations.insecure_channel(host, int(port))
   stub = prediction_service_pb2.beta_create_PredictionService_stub(channel)
+# ==================================================================
   result_counter = _ResultCounter(num_tests, concurrency)
   for _ in range(num_tests):
+    # ===== create request ====
     request = predict_pb2.PredictRequest()
-    request.model_spec.name = 'mnist'
-    request.model_spec.signature_name = 'predict_images'
-    image, label = test_data_set.next_batch(1)
-    request.inputs['images'].CopyFrom(
+    request.model_spec.name = 'mnist' # specify model name
+    request.model_spec.signature_name = 'predict_images' # specify signature name
+    image, label = test_data_set.next_batch(1) # get data
+    request.inputs['images'].CopyFrom( # 'images' corresponds to ???
         tf.contrib.util.make_tensor_proto(image[0], shape=[1, image[0].size]))
+    # =====================
     result_counter.throttle()
     result_future = stub.Predict.future(request, 5.0)  # 5 seconds
     result_future.add_done_callback(
