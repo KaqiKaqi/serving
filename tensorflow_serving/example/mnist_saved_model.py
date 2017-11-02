@@ -128,9 +128,9 @@ def main(_):
       sess, [tf.saved_model.tag_constants.SERVING],
       signature_def_map={
           'predict_images':
-              prediction_signature,
+              prediction_signature, # this is used in client.
           tf.saved_model.signature_constants.DEFAULT_SERVING_SIGNATURE_DEF_KEY:
-              classification_signature,
+              classification_signature,# what is this used for? not used in client.
       },
       legacy_init_op=legacy_init_op)
 
